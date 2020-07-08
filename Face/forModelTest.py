@@ -4,11 +4,11 @@ import openface
 import os
 import cv2
 import pandas as pd
-
+    
 # dlib的人脸位置提取模型的路径
-dlibFacePredictor = '/opt/openface/models/dlib/shape_predictor_68_face_landmarks.dat'  
+dlibFacePredictor = 'D:/python/openface/models/dlib/shape_predictor_68_face_landmarks.dat'  
 
-networkModel = '/opt/openface/models/openface/nn4.small2.v1.t7'    
+networkModel = 'D:/python/openface/models/openface/nn4.small2.v1.t7'    
 align = openface.AlignDlib(dlibFacePredictor)
 net = openface.TorchNeuralNet(networkModel, 96)  # 神经网络输入图片尺寸96*96
 cwd = os.getcwd()
@@ -35,7 +35,7 @@ def baseImageRep(imagesFileName):
                 if img is None:
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 if img is None:
-                    print 'img is None:%s' % image
+                    print ('img is None:%s' % image)
 
                 bb = align.getLargestFaceBoundingBox(img)
                 alignedFace = align.align(96,img, bb,
@@ -47,16 +47,16 @@ def baseImageRep(imagesFileName):
                 labels.append(label)
 
             except Exception as e:
-                print image
-        print '提取人物的特征点:', person
+                print (image)
+        print ('提取人物的特征点:', person)
 
     assert len(dataSet) == len(labels)   # 样本数和标签数要相等
     dataSetDf = pd.DataFrame(dataSet,columns=map(lambda x: '特征值_%d'% x, range(1,129)))
     labelsDf = pd.DataFrame(labels,columns=['lables'])
     dataAllDf = pd.concat([labelsDf,dataSetDf], axis=1)
-    print '正在生成基础集特征点文件  repBaseData.csv'
+    print ('正在生成基础集特征点文件  repBaseData.csv')
     dataAllDf.to_csv('repBaseData.csv')
-    print  '文件保存完成   repBaseData.csv'
+    print  ('文件保存完成   repBaseData.csv')
     dataSet = np.array(dataSet)   # 转化为numpy数组???需要吗？？？当然需要，这里坑了一下，kNN遍历计算距离时需要用到numpy array
     # labels = np.array(labels)   # labels没有进行计算，可以不转化为numpy array，直接return 一个list
 
@@ -76,7 +76,7 @@ def testImagesRep(testImages):
             if img is None:
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             if img is None:
-                print 'img is None:%s' % image
+                print ('img is None:%s' % image)
 
             bb = align.getLargestFaceBoundingBox(img)
             alignedFace = align.align(96, img, bb,
@@ -88,25 +88,25 @@ def testImagesRep(testImages):
             labelsTest.append(labelTest)
 
         except Exception as e:
-            print image
+            print (image)
 
         finally:
-            print '提取测试集中人物特征点', imagePath
+            print ('提取测试集中人物特征点', imagePath)
 
     assert len(dataTest)==len(labelsTest)   # 断言样本数和labels数量相等
 
     datasSetTestDf = pd.DataFrame(dataTest, columns=map(lambda x: '特征值_%d' % x, range(1, 129)))
     labelsTestDf = pd.DataFrame(labelsTest, columns=['lables'])
     dataAllTestDf = pd.concat([labelsTestDf, datasSetTestDf], axis=1)
-    print '正在生成测试样本集的特征值   repTestData.csv'
+    print ('正在生成测试样本集的特征值   repTestData.csv')
     dataAllTestDf.to_csv('repTestData.csv')
-    print '文件完成保存    repTestData.csv'
+    print ('文件完成保存    repTestData.csv')
 
     dataTest=np.array(dataTest)
     return dataTest, labelsTest
 
 #k近邻分类器
-def kNNClassify(inX, dataSet, labels, k=3):
+def kNNClassify(inX, dataSet, labels, k=1):
     '''
     :param inX:  测试的样本128位特征值
     :param dataSet: 带标签基础集数据，128列的numpy数组
