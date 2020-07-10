@@ -5,32 +5,16 @@ path1=os.path.abspath('.')   #表示当前所处的文件夹的绝对路径
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture(0)
 
-# Load pictures and learn how to recognize them.
-Peirsol_image = face_recognition.load_image_file(path1+"/Aaron_Peirsol.jpg")
-Peirsol_face_encoding = face_recognition.face_encodings(Peirsol_image)[0]
-
-Sharpton_image = face_recognition.load_image_file(path1+"/Al_Sharpton.jpg")
-Sharpton_face_encoding = face_recognition.face_encodings(Sharpton_image)[0]
-
-Kwasniewski_image = face_recognition.load_image_file(path1+"/Aleksander_Kwasniewski.jpg")
-Kwasniewski_face_encoding = face_recognition.face_encodings(Kwasniewski_image)[0]
-
-Howland_image = face_recognition.load_image_file(path1+"/Ben_Howland.jpg")
-Howland_face_encoding = face_recognition.face_encodings(Howland_image)[0]
-
 # Create arrays of known face encodings and their names
-known_face_encodings = [
-    Peirsol_face_encoding,
-    Sharpton_face_encoding,
-    Kwasniewski_face_encoding,
-    Howland_face_encoding
-]
-known_face_names = [
-    "Aaron Peirsol",
-    "Al Sharpton",
-    "Aleksander Kwasniewski",
-    "Ben Howland"
-]
+known_face_encodings = []
+known_face_names = []
+BaseList = os.listdir(path1+"/BaseImages")
+for img in BaseList:
+    cur_img = face_recognition.load_image_file(path1 + "/BaseImages/" + img)
+    cur_face_encoding = face_recognition.face_encodings(cur_img)[0]
+    known_face_encodings.append(cur_face_encoding)
+    label= img.split('_')[0] + ' ' + (img.split('_')[1]).split('.')[0]
+    known_face_names.append(label)
 
 # Initialize some variables
 face_locations = []
